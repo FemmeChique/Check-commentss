@@ -11127,8 +11127,93 @@ const DONNEES_INTEGREES = `[
   DATA=[...DATA,...newRows];
 })();
 
-// INIT
-$('hdrDate').textContent=todayFr();
+// ============ LOCALSTORAGE ============
+const LS_KEY = 'bravocomment_data';
+
+function saveToLS() {
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify(DATA));
+    showSaveIndicator();
+  } catch(e) {
+    console.warn('localStorage save failed:', e);
+  }
+}
+
+function loadFromLS() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      DATA = parsed;
+      return true;
+    }
+  } catch(e) {
+    console.warn('localStorage load failed:', e);
+  }
+  return false;
+}
+
+function clearLS() {
+  if (confirm('Effacer toutes les données sauvegardées ? Cette action est irréversible.')) {
+    localStorage.removeItem(LS_KEY);
+    DATA = [];
+    VIEW = [];
+    refreshAgentFilter();
+    updateStats();
+    doFilter();
+    showToast('Données effacées');
+  }
+}
+
+function showSaveIndicator() {
+  const el = document.getElementById('saveIndicator');
+  if (!el) return;
+  el.textContent = '✓ Sauvegardé';
+  el.style.opacity = '1';
+  setTimeout(() => { el.style.opacity = '0'; }, 2000);
+}
+
+// Patch saveCase, deleteCase, delRow, chgStatut, confirmImport to auto-save
+const _origSaveCase = saveCase;
+saveCase = function() { _origSaveCase(); saveToLS(); };
+const _origDeleteCase = deleteCase;
+deleteCase = function() { _origDeleteCase(); saveToLS(); };
+const _origDelRow = delRow;
+delRow = function(idx) { _origDelRow(idx); saveToLS(); };
+const _origChgStatut = chgStatut;
+chgStatut = function(idx, sel) { _origChgStatut(idx, sel); saveToLS(); };
+const _origConfirmImport = confirmImport;
+confirmImport = function() { _origConfirmImport(); saveToLS(); };
+
+// ============ INIT ============
+$('hdrDate').textContent = todayFr();
+
+// Add save indicator + clear button to header
+const hdrBtns = document.querySelector('.hdr-btns');
+if (hdrBtns) {
+  const saveSpan = document.createElement('span');
+  saveSpan.id = 'saveIndicator';
+  saveSpan.style.cssText = 'color:#10b981;font-size:11px;font-weight:600;opacity:0;transition:opacity .5s;align-self:center;white-space:nowrap;';
+  saveSpan.textContent = '✓ Sauvegardé';
+  hdrBtns.appendChild(saveSpan);
+
+  const clearBtn = document.createElement('button');
+  clearBtn.className = 'btn btn-danger';
+  clearBtn.style.fontSize = '11px';
+  clearBtn.innerHTML = '🗑 Effacer';
+  clearBtn.onclick = clearLS;
+  hdrBtns.appendChild(clearBtn);
+}
+
+// Load data from localStorage on startup
+if (loadFromLS()) {
+  refreshAgentFilter();
+  updateStats();
+  DATA.sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  doFilter();
+  showToast('✓ ' + DATA.length + ' cas restaurés automatiquement');
+}
 refreshAgentFilter();updateStats();
 DATA.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
 doFilter();
