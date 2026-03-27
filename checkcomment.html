@@ -8,10 +8,16 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;font-size:14px;color:#1e293b;background-image:url('bravo-bg.jpg');background-size:cover;background-position:center;background-attachment:fixed;background-repeat:no-repeat;min-height:100vh}
-body::before{content:'';position:fixed;inset:0;background:rgba(10,20,45,0.75);z-index:0;pointer-events:none}
+body::before{content:'';position:fixed;inset:0;background:rgba(10,20,45,0.70);z-index:0;pointer-events:none}
 .hdr,.tabs,.stats,.filters,.tbl-wrap,.tab-pane,.ag-grid,.guide,.ov{position:relative;z-index:1}
-.tabs,.stats .stat,.filters,.tbl-wrap{background:rgba(255,255,255,0.92)!important}
-.hdr{background:rgba(15,23,42,0.97)!important}
+.tabs{background:rgba(255,255,255,0.88)!important}
+.stats .stat{background:rgba(255,255,255,0.88)!important}
+.filters{background:rgba(255,255,255,0.88)!important}
+.tbl-wrap{background:rgba(255,255,255,0.90)!important}
+.tbl-wrap table thead th{background:rgba(248,250,252,0.95)!important}
+.hdr{background:rgba(15,23,42,0.96)!important}
+.ag-card{background:rgba(255,255,255,0.88)!important}
+.g-sec{background:rgba(255,255,255,0.88)!important}
 /* HEADER */
 .hdr{background:#1e293b;color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:12px;flex-wrap:wrap}
 .hdr-title h1{font-size:16px;font-weight:600;letter-spacing:-.2px}
