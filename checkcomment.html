@@ -92,6 +92,10 @@ tr:last-child td{border-bottom:none}
 .b-vert{background:#ecfdf5;color:#059669;border:1px solid #6ee7b7}
 .b-actif{background:#ecfdf5;color:#059669;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600}
 .b-inactif{background:#f1f5f9;color:#64748b;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600}
+.b-resid{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600}
+.b-comm{background:#f5f3ff;color:#7c3aed;border:1px solid #c4b5fd;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600}
+.b-nouveau-mal{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:3px}
+tr.nouveau-mal-traite td{background:#fff5f5!important;border-left:3px solid #ef4444}
 /* STATUT SELECT */
 .stsel{border:none;border-radius:6px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;outline:none;padding:4px 22px 4px 8px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath fill='%23888' d='M4 6L0 2h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center}
 .stsel.ouvert{background-color:#fff7ed;color:#ea580c}
@@ -231,6 +235,10 @@ tr:last-child td{border-bottom:none}
       </select>
     </div>
     <div class="fr2">
+      <span class="fl">Type:</span>
+      <select class="flt" id="fType" onchange="doFilter()">
+        <option value="">Tous</option><option>Résidentiel</option><option>Commercial</option>
+      </select>
       <span class="fl">Raison:</span>
       <select class="flt" id="fRaison" onchange="doFilter()">
         <option value="">Toutes</option><option>TECH</option><option>Service Client</option>
@@ -260,6 +268,8 @@ tr:last-child td{border-bottom:none}
       <thead>
         <tr>
           <th style="width:36px"><input type="checkbox" id="chkAll" onchange="toggleAll(this)"></th>
+          <th onclick="sortBy('type')">TYPE ↕</th>
+          <th onclick="sortBy('dateCreation')">DATE CRÉATION ↕</th>
           <th onclick="sortBy('acc')">ACC ↕</th>
           <th onclick="sortBy('nom')">CLIENT ↕</th>
           <th onclick="sortBy('agent')">AGENT ↕</th>
@@ -367,6 +377,9 @@ tr:last-child td{border-bottom:none}
     <div class="modal-body">
       <input type="hidden" id="editIdx" value="-1">
       <div class="fg-grid">
+        <div class="fg"><label class="flbl">Type de compte</label>
+          <select class="fsel" id="f_type"><option>Résidentiel</option><option>Commercial</option></select></div>
+        <div class="fg"><label class="flbl">Date de création</label><input type="date" class="finp" id="f_dateCreation"></div>
         <div class="fg"><label class="flbl">Numéro ACC *</label><input class="finp" id="f_acc" placeholder="ACCxxxxx"></div>
         <div class="fg"><label class="flbl">Agent</label><input class="finp" id="f_agent"></div>
         <div class="fg"><label class="flbl">Nom</label><input class="finp" id="f_nom"></div>
@@ -446,6 +459,14 @@ function isRemonte(c){
 function isErreur(c){
   if(!c) return false;
   return /erreur|mauvaise manip|fausse route|annulé par erreur|information incorrecte|erreur saisie/i.test(c);
+}
+function isNouveauMalTraite(dateCreation, commentaire){
+  if(!dateCreation || !commentaire) return false;
+  const d = new Date(dateCreation);
+  if(isNaN(d)) return false;
+  const diffDays = Math.floor((new Date() - d) / 86400000);
+  if(diffDays > 31) return false; // plus d'un mois = pas nouveau
+  return /mauvais traitement|mal trait|manque de prise en charge|non pris en charge|insatisf|plainte|pas de suivi|aucun suivi|abandon|ignor|néglig|pas rappel|jamais rappel|pas de retour|aucun retour|pas contact|refus de|mauvaise prise|pas aidé|problème non résolu/i.test(commentaire);
 }
 function detectRaison(colVal, cmt){
   // Si la colonne raison du fichier est remplie et reconnue → on la garde
@@ -557,7 +578,7 @@ function refreshAgentFilter(){
 // ============ FILTER ============
 function doFilter(){
   const s=$('srch').value.toLowerCase();
-  const ag=$('fAgent').value,et=$('fEtat').value,ra=$('fRaison').value;
+  const ag=$('fAgent').value,et=$('fEtat').value,ra=$('fRaison').value,ty=$('fType')?$('fType').value:'';
   const al=$('fAlerte').value,st=$('fStatut').value;
   const du=$('fDu').value,au=$('fAu').value;
 
@@ -568,6 +589,7 @@ function doFilter(){
   VIEW=src.filter(r=>{
     if(s&&![r.acc,r.nom,r.prenom,r.tel,r.agent,r.commentaire].join(' ').toLowerCase().includes(s))return false;
     if(ag&&r.agent!==ag)return false;
+    if(ty&&r.type!==ty)return false;
     if(et&&r.etat!==et)return false;
     if(ra&&r.raison!==ra)return false;
     if(al&&r.alerte!==al)return false;
@@ -582,7 +604,7 @@ function doFilter(){
 
 function resetFilters(){
   ['srch','fDu','fAu'].forEach(id=>$(id).value='');
-  ['fAgent','fEtat','fRaison','fAlerte','fStatut'].forEach(id=>$(id).value='');
+  ['fAgent','fEtat','fRaison','fAlerte','fStatut','fType'].forEach(id=>{if($(id))$(id).value='';});
   doFilter();
 }
 
@@ -629,9 +651,15 @@ function renderTable(){
       ${hasMore?`<span class="voir-plus" id="vp${idx}" onclick="toggleCmt(${idx})">▾ voir plus</span>`:''}
     </div>`;
 
-    return `<tr>
+    const nouveauMal = isNouveauMalTraite(r.dateCreation, r.commentaire);
+    const typeBadge = r.type==='Commercial'?'<span class="b-comm">Commercial</span>':'<span class="b-resid">Résidentiel</span>';
+    const dateCreFmt = r.dateCreation ? fmtDate(r.dateCreation) : '<span style="color:#cbd5e1">—</span>';
+    const nouveauMalBadge = nouveauMal ? '<br><span class="b-nouveau-mal">⚠️ Nouveau client mal traité</span>' : '';
+    return `<tr class="${nouveauMal?'nouveau-mal-traite':''}">
       <td><input type="checkbox" ${r.sel?'checked':''} onchange="DATA[${idx}].sel=this.checked"></td>
-      <td><span class="acc">${esc(r.acc)}</span></td>
+      <td>${typeBadge}</td>
+      <td class="dt">${dateCreFmt}</td>
+      <td><span class="acc">${esc(r.acc)}</span>${nouveauMalBadge}</td>
       <td><div class="cname">${esc(r.nom)} ${esc(r.prenom)}</div><div class="ctel">${esc(r.tel)}</div></td>
       <td><span class="agent-lnk">${esc(r.agent)}</span></td>
       <td class="dt">${fmtDate(r.date)}</td>
@@ -720,6 +748,8 @@ function processFile(file){
 
 // MAPPING FIELDS definition
 const FIELDS=[
+  {key:'type',         label:'Type de compte',   req:false, hints:['type de compte','type compte','type']},
+  {key:'dateCreation', label:'Date de création',  req:false, hints:['date de création','date creation','date_creation','date ouverture','date d\'ouverture']},
   {key:'acc',      label:'Numéro ACC',       req:true,  hints:['acc']},
   {key:'nom',      label:'Nom',              req:false, hints:['nom']},
   {key:'prenom',   label:'Prénom',           req:false, hints:['prénom','prenom']},
@@ -802,7 +832,11 @@ function confirmImport(){
     const st=stRaw.includes('résol')||stRaw.includes('resol')||stRaw.includes('ferm')?'Résolu':'Ouvert';
     const etRaw=get(r,map.etat).toLowerCase();
     const et=etRaw.includes('inactif')||etRaw.includes('annul')?'Inactif':'Actif';
+    const isoCreation = parseDate(map.dateCreation?r[map.dateCreation]:'');
+    const typeVal = get(r,map.type)||'Résidentiel';
+    const typeNorm = typeVal.toLowerCase().includes('comm')?'Commercial':'Résidentiel';
     return{
+      type:typeNorm,dateCreation:isoCreation,
       acc:get(r,map.acc),nom:get(r,map.nom),prenom:get(r,map.prenom),
       tel:get(r,map.tel),agent:get(r,map.agent),date:iso,
       raison:detectRaison(get(r,map.raison),cmt),commentaire:cmt,
@@ -832,6 +866,7 @@ function openEdit(idx){
   const r=DATA[idx];
   $('editIdx').value=idx;$('caseTitle').textContent='✏️ Modifier le cas';
   $('btnDel').style.display='';
+  $('f_type').value=r.type||'Résidentiel';$('f_dateCreation').value=r.dateCreation||'';
   $('f_acc').value=r.acc;$('f_nom').value=r.nom;$('f_prenom').value=r.prenom;
   $('f_tel').value=r.tel;$('f_agent').value=r.agent;$('f_date').value=r.date;
   $('f_raison').value=r.raison;$('f_cmt').value=r.commentaire;
@@ -843,7 +878,8 @@ function saveCase(){
   if(!acc){showToast('Le numéro ACC est requis',false);return;}
   const idx=parseInt($('editIdx').value);
   const iso=$('f_date').value,j=daysBetween(iso),cmt=$('f_cmt').value;
-  const row={acc,nom:$('f_nom').value,prenom:$('f_prenom').value,tel:$('f_tel').value,
+  const row={type:$('f_type').value,dateCreation:$('f_dateCreation').value,
+    acc,nom:$('f_nom').value,prenom:$('f_prenom').value,tel:$('f_tel').value,
     agent:$('f_agent').value,date:iso,raison:$('f_raison').value,commentaire:cmt,
     etat:$('f_etat').value,statut:$('f_statut').value,
     jours:j,remonte:isRemonte(cmt),erreur:isErreur(cmt),sel:false,
@@ -865,10 +901,10 @@ function delRow(idx){
 function doExportCSV(){
   const src=VIEW.filter(r=>r.sel).length?VIEW.filter(r=>r.sel):VIEW;
   if(!src.length){showToast('Aucune donnée à exporter',false);return;}
-  const hdrs=['ACC','Nom','Prénom','Téléphone','Agent','Date','Nb jours','Alerte','Raison','Statut','État','Commentaire','Remonté/Temp','Erreur agent'];
-  const rows=src.map(r=>[r.acc,r.nom,r.prenom,r.tel,r.agent,r.date,r.jours??'',
+  const hdrs=['Type compte','Date création','ACC','Nom','Prénom','Téléphone','Agent','Date','Nb jours','Alerte','Raison','Statut','État','Commentaire','Remonté/Temp','Erreur agent','Nouveau mal traité'];
+  const rows=src.map(r=>[r.type||'Résidentiel',r.dateCreation||'',r.acc,r.nom,r.prenom,r.tel,r.agent,r.date,r.jours??'',
     r.alerte==='rouge'?'Rouge':r.alerte==='orange'?'Orange':'Verte',
-    r.raison,r.statut,r.etat,r.commentaire,r.remonte?'Oui':'Non',r.erreur?'Oui':'Non']);
+    r.raison,r.statut,r.etat,r.commentaire,r.remonte?'Oui':'Non',r.erreur?'Oui':'Non',isNouveauMalTraite(r.dateCreation,r.commentaire)?'Oui':'Non']);
   const csv=[hdrs,...rows].map(row=>row.map(c=>`"${String(c??'').replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
