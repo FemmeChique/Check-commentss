@@ -768,11 +768,20 @@ function syncFromSheet(){
         'Etat du compte':'etat','État du compte':'etat',
         'Raison':'raison','Statut':'statut','Alerte':'alerte'
       };
+      const fmt = (d) => {
+        if(!d) return '';
+        const dt = new Date(d);
+        if(isNaN(dt.getTime())) return String(d);
+        return dt.toISOString().split('T')[0];
+      };
       const newCases = sheetRows.map(row => {
         const cas = {};
         for(const [sk,jk] of Object.entries(MAP)){
           if(row[sk]!==undefined) cas[jk]=String(row[sk]||'').trim();
         }
+        if(cas.dateCreation) cas.dateCreation = fmt(cas.dateCreation);
+        if(cas.date) cas.date = fmt(cas.date);
+        cas.raison = cas.raison || '';
         cas.jours = 0;
         cas.remonte = false;
         cas.erreur = false;
@@ -786,7 +795,7 @@ function syncFromSheet(){
       VIEW = DATA.slice();
       saveToLS();
       renderTable();
-      renderStats();
+      updateStats();
       closeOv('ovImport');
       showToast(DATA.length + ' cas chargés depuis Google Sheets', true);
       document.getElementById('sheetScriptUrl').value = '';
