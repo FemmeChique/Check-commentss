@@ -366,7 +366,7 @@ tr.vente-conclue{opacity:0.45;font-style:italic}
       <div id="impSheetSection" style="margin-top:16px;border-top:1px solid #e2e8f0;padding-top:16px;">
         <p style="font-size:13px;color:#64748b;margin-bottom:8px;font-weight:600;">Synchroniser depuis Google Sheets</p>
         <div style="display:flex;gap:8px;align-items:center;">
-          <input type="text" id="sheetScriptUrl" placeholder="Coller ici l'URL de votre Apps Script..." 
+          <input type="text" id="sheetScriptUrl" placeholder="Coller ici l'URL de votre Apps Script..." value="https://script.google.com/macros/s/AKfycbwZifjTT5xBEaK53Urv-YIfmD1iwSE75rMVxZ3vfjhejPoJIAyqBHuCZr4ORmml5KPGWA/exec" 
                  style="flex:1;padding:8px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;font-family:inherit;">
           <button class="btn" onclick="syncFromSheet()" 
                   style="background:#16a34a;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;white-space:nowrap;">
@@ -429,6 +429,8 @@ tr.vente-conclue{opacity:0.45;font-style:italic}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+
+const SHEET_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwZifjTT5xBEaK53Urv-YIfmD1iwSE75rMVxZ3vfjhejPoJIAyqBHuCZr4ORmml5KPGWA/exec';
 let DATA = [];
 let VIEW = [];
 let activeTab = 'all';
