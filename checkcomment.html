@@ -757,16 +757,38 @@ function syncFromSheet(){
       if(!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
     })
-    .then(data => {
-      if(!Array.isArray(data)) throw new Error('Format invalide');
-      rawRows = data;
-      DATA = buildCases(rawRows);
+    .then(sheetRows => {
+      if(!Array.isArray(sheetRows)) throw new Error('Format invalide');
+      const MAP = {
+        'ACC':'acc','Nom':'nom','Prenom':'prenom','Prénom':'prenom',
+        'Telephone':'tel','Téléphone':'tel','Type':'type',
+        'Date de creation':'dateCreation','Date de création':'dateCreation',
+        'Cree par':'agent','Créé par':'agent',
+        'Date commentaire':'date','Commentaire':'commentaire',
+        'Etat du compte':'etat','État du compte':'etat',
+        'Raison':'raison','Statut':'statut','Alerte':'alerte'
+      };
+      const newCases = sheetRows.map(row => {
+        const cas = {};
+        for(const [sk,jk] of Object.entries(MAP)){
+          if(row[sk]!==undefined) cas[jk]=String(row[sk]||'').trim();
+        }
+        cas.jours = 0;
+        cas.remonte = false;
+        cas.erreur = false;
+        cas.sel = false;
+        if(!cas.alerte) cas.alerte = 'vert';
+        if(!cas.statut) cas.statut = 'Ouvert';
+        return cas;
+      }).filter(c => c.acc);
+      if(newCases.length === 0) throw new Error('Aucun cas avec colonne ACC trouvé');
+      DATA = newCases;
       VIEW = DATA.slice();
-      saveLS();
+      saveToLS();
       renderTable();
       renderStats();
       closeOv('ovImport');
-      showToast(DATA.length + ' cas charges depuis Google Sheets', true);
+      showToast(DATA.length + ' cas chargés depuis Google Sheets', true);
       document.getElementById('sheetScriptUrl').value = '';
       statusEl.textContent = '';
     })
@@ -775,6 +797,7 @@ function syncFromSheet(){
       statusEl.style.color = '#ef4444';
     });
 }
+
 
 function openImport(){
   $('impS1').style.display='';$('impS2').style.display='none';
