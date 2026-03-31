@@ -1,1161 +1,2322 @@
 <!DOCTYPE html>
+
 <html lang="fr">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Suivi des cas — Erreur de traitement</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
+
 *{box-sizing:border-box;margin:0;padding:0}
+
 body{font-family:'Inter',sans-serif;font-size:14px;color:#1e293b;background-image:url('bravo-bg.jpg');background-size:cover;background-position:center;background-attachment:fixed;background-repeat:no-repeat;min-height:100vh}
+
 body::before{content:'';position:fixed;inset:0;background:rgba(10,20,45,0.70);z-index:0;pointer-events:none}
+
 .hdr,.tabs,.stats,.filters,.tbl-wrap,.tab-pane,.ag-grid,.guide,.ov{position:relative;z-index:1}
+
 .tabs{background:rgba(255,255,255,0.88)!important}
+
 .stats .stat{background:rgba(255,255,255,0.88)!important}
+
 .filters{background:rgba(255,255,255,0.88)!important}
+
 .tbl-wrap{background:rgba(255,255,255,0.90)!important}
+
 .tbl-wrap table thead th{background:rgba(248,250,252,0.95)!important}
+
 .hdr{background:rgba(15,23,42,0.96)!important}
+
 .ag-card{background:rgba(255,255,255,0.88)!important}
+
 .g-sec{background:rgba(255,255,255,0.88)!important}
 
+
+
 .hdr{background:#1e293b;color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:12px;flex-wrap:wrap}
+
 .hdr-title h1{font-size:16px;font-weight:600;letter-spacing:-.2px}
+
 .hdr-title p{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px}
+
 .hdr-btns{display:flex;gap:8px;flex-wrap:wrap}
+
 .btn{padding:7px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;transition:filter .15s}
+
 .btn:hover{filter:brightness(.9)}
+
 .btn-cnt{background:rgba(255,255,255,.15);color:#fff;font-size:12px}
+
 .btn-imp{background:#3b82f6;color:#fff}
+
 .btn-new{background:#374151;color:#fff;border:1px solid rgba(255,255,255,.15)}
+
 .btn-exp{background:#10b981;color:#fff}
+
 .btn-primary{background:#3b82f6;color:#fff}
+
 .btn-outline{background:#fff;color:#64748b;border:1px solid #e2e8f0}
+
 .btn-danger{background:#fee2e2;color:#ef4444;border:1px solid #fca5a5}
+
 .btn-save{background:#10b981;color:#fff}
 
+
+
 .tabs{background:#fff;border-bottom:2px solid #e2e8f0;padding:0 24px;display:flex;gap:4px;overflow-x:auto}
+
 .tab{padding:12px 18px;cursor:pointer;font-size:13px;font-weight:500;color:#64748b;border-bottom:2px solid transparent;margin-bottom:-2px;display:flex;align-items:center;gap:7px;white-space:nowrap;transition:color .15s}
+
 .tab:hover{color:#1e293b}
+
 .tab.on{color:#3b82f6;border-bottom-color:#3b82f6}
+
 .tb{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 6px;border-radius:20px;font-size:11px;font-weight:700;background:#eff6ff;color:#3b82f6}
+
 .tab.on .tb{background:#3b82f6;color:#fff}
 
+
+
 .stats{display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid #e2e8f0}
+
 .stat{background:#fff;padding:18px 20px;border-right:1px solid #e2e8f0}
+
 .stat:last-child{border-right:none}
+
 .stat-n{font-size:30px;font-weight:700;line-height:1;margin-bottom:5px}
+
 .stat-l{font-size:11px;color:#94a3b8;font-weight:400}
+
 .c-blue{color:#3b82f6}.c-orange{color:#f97316}.c-green{color:#10b981}.c-red{color:#ef4444}.c-cyan{color:#06b6d4}.c-purple{color:#8b5cf6}
 
+
+
 .filters{background:#fff;border-bottom:1px solid #e2e8f0}
+
 .fr1{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid #f8fafc;flex-wrap:wrap}
+
 .fr2{display:flex;align-items:center;gap:8px;padding:10px 20px;flex-wrap:wrap}
+
 .srch-wrap{flex:1;min-width:200px;position:relative}
+
 .srch-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:13px;pointer-events:none}
+
 .srch{width:100%;background:#f8fafc;border:1px solid #e2e8f0;color:#1e293b;border-radius:8px;padding:8px 12px 8px 34px;font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+
 .srch:focus{border-color:#3b82f6;background:#fff}
+
 .srch::placeholder{color:#94a3b8}
+
 .fl{font-size:12px;color:#64748b;font-weight:500;white-space:nowrap}
+
 select.flt{background:#fff;border:1px solid #e2e8f0;color:#1e293b;border-radius:8px;padding:7px 28px 7px 11px;font-family:'Inter',sans-serif;font-size:13px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%2394a3b8' d='M5 7L0.5 2.5h9z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;transition:border-color .2s}
+
 select.flt:focus{border-color:#3b82f6}
+
 input[type=date].flt{background:#fff;border:1px solid #e2e8f0;color:#1e293b;border-radius:8px;padding:7px 11px;font-family:'Inter',sans-serif;font-size:13px;outline:none}
+
 input[type=date].flt:focus{border-color:#3b82f6}
+
 .rcnt{font-size:13px;color:#64748b;font-weight:500;white-space:nowrap}
+
 .btn-reinit{background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;font-size:12px;padding:6px 12px}
+
 .btn-expcsv{background:#10b981;color:#fff;font-size:12px;padding:6px 12px}
 
+
+
 .tbl-wrap{overflow-x:auto;background:#fff}
+
 table{width:100%;border-collapse:collapse}
+
 thead{position:sticky;top:0;z-index:10}
+
 th{background:#f8fafc;border-bottom:2px solid #e2e8f0;border-top:1px solid #e2e8f0;padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#64748b;white-space:nowrap;cursor:pointer;user-select:none}
+
 th:hover{color:#1e293b}
+
 td{padding:11px 14px;border-bottom:1px solid #f1f5f9;font-size:13px;vertical-align:top}
+
 tr:hover td{background:#fafbff}
+
 tr:last-child td{border-bottom:none}
 
+
+
 .acc{color:#3b82f6;font-weight:600;font-size:13px;cursor:pointer}
+
 .acc:hover{text-decoration:underline}
+
 .cname{font-weight:500}
+
 .ctel{color:#94a3b8;font-size:11px;margin-top:2px}
+
 .agent-lnk{color:#3b82f6;font-size:12px}
+
 .dt{font-size:12px;color:#64748b;white-space:nowrap}
 
+
+
 .badge{display:inline-flex;align-items:center;gap:3px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+
 .b-tech{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe}
+
 .b-sac{background:#ecfdf5;color:#059669;border:1px solid #6ee7b7}
+
 .b-fact{background:#fff7ed;color:#ea580c;border:1px solid #fdba74}
+
 .b-vente{background:#f5f3ff;color:#7c3aed;border:1px solid #c4b5fd}
+
 .b-annul{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5}
+
 .b-rouge{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5}
+
 .b-orange{background:#fff7ed;color:#ea580c;border:1px solid #fdba74}
+
 .b-vert{background:#ecfdf5;color:#059669;border:1px solid #6ee7b7}
+
 .b-actif{background:#ecfdf5;color:#059669;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600}
+
 .b-inactif{background:#f1f5f9;color:#64748b;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600}
+
 .b-resid{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600}
+
 .b-comm{background:#f5f3ff;color:#7c3aed;border:1px solid #c4b5fd;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600}
+
 .b-nouveau-mal{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:3px}
+
 .b-probleme{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:3px}
+
 tr.nouveau-mal-traite td{background:#fff5f5!important;border-left:3px solid #ef4444}
+
 tr.has-probleme td{background:#fffbf0!important;border-left:3px solid #f97316}
+
 tr.vente-conclue{opacity:0.45;font-style:italic}
 
+
+
 .stsel{border:none;border-radius:6px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;outline:none;padding:4px 22px 4px 8px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath fill='%23888' d='M4 6L0 2h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center}
+
 .stsel.ouvert{background-color:#fff7ed;color:#ea580c}
+
 .stsel.resolu{background-color:#ecfdf5;color:#059669}
 
+
+
 .cmt-wrap{min-width:260px;max-width:360px}
+
 .cmt-txt{font-size:12px;line-height:1.6;color:#334155;word-break:break-word}
+
 .cmt-short{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
 .cmt-full{display:none;white-space:pre-wrap}
+
 .voir-plus{display:inline-block;margin-top:4px;color:#3b82f6;font-size:11px;font-weight:600;cursor:pointer;border-bottom:1px dashed #3b82f6;line-height:1.4}
+
 .voir-plus:hover{color:#2563eb}
 
+
+
 .act-btns{display:flex;gap:5px}
+
 .btn-ic{background:none;border:1px solid #e2e8f0;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:12px;color:#64748b;transition:all .15s;white-space:nowrap}
+
 .btn-ic:hover{background:#f1f5f9;color:#1e293b}
 
+
+
 .empty{text-align:center;padding:70px 20px}
+
 .empty-ico{font-size:50px;margin-bottom:14px;opacity:.3}
+
 .empty-txt{color:#94a3b8;font-size:14px}
 
+
+
 .ov{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:200;align-items:center;justify-content:center;padding:16px}
+
 .ov.on{display:flex}
+
 .modal{background:#fff;border-radius:14px;width:680px;max-width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+
 .modal-hdr{padding:22px 24px 0;display:flex;align-items:center;justify-content:space-between}
+
 .modal-hdr h2{font-size:16px;font-weight:600}
+
 .modal-x{background:none;border:none;cursor:pointer;font-size:18px;color:#94a3b8;padding:0 4px;line-height:1}
+
 .modal-x:hover{color:#1e293b}
+
 .modal-body{padding:20px 24px}
+
 .modal-ftr{padding:16px 24px;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end;gap:8px}
 
+
+
 .fg{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+
 .fg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
 .fg.full{grid-column:span 2}
+
 .flbl{font-size:12px;font-weight:500;color:#64748b}
+
 .finp,.fsel,.ftxt{background:#f8fafc;border:1px solid #e2e8f0;color:#1e293b;border-radius:8px;padding:9px 12px;font-family:'Inter',sans-serif;font-size:13px;outline:none;width:100%;transition:border-color .2s}
+
 .finp:focus,.fsel:focus,.ftxt:focus{border-color:#3b82f6;background:#fff}
+
 .ftxt{resize:vertical;min-height:80px}
 
+
+
 .imp-drop{border:2px dashed #e2e8f0;border-radius:12px;padding:44px 24px;text-align:center;cursor:pointer;transition:all .15s;background:#f8fafc}
+
 .imp-drop:hover,.imp-drop.drag{border-color:#3b82f6;background:#eff6ff}
+
 .imp-ico{font-size:44px;margin-bottom:12px}
+
 .imp-txt{color:#94a3b8;font-size:13px;line-height:1.7}
+
 .imp-txt strong{color:#1e293b}
 
+
+
 .map-info{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:11px 16px;margin-bottom:16px;font-size:13px;color:#1d4ed8}
+
 .map-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+
 .map-lbl{font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+
 .map-req{color:#ef4444}
+
 .map-ok{color:#10b981;font-weight:400;text-transform:none;font-size:10px}
+
 .map-sel{background:#fff;border:1px solid #e2e8f0;color:#1e293b;border-radius:7px;padding:7px 10px;font-family:'Inter',sans-serif;font-size:12px;outline:none;width:100%;cursor:pointer}
+
 .map-sel:focus{border-color:#3b82f6}
 
+
+
 .prev-lbl{font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px}
+
 .prev-wrap{overflow-x:auto;border:1px solid #e2e8f0;border-radius:8px;max-height:160px;overflow-y:auto}
+
 .prev-wrap table{width:100%;border-collapse:collapse;font-size:11px;white-space:nowrap}
+
 .prev-wrap th{background:#f8fafc;padding:6px 10px;border:1px solid #e2e8f0;color:#64748b;font-size:10px;text-transform:uppercase}
+
 .prev-wrap td{padding:5px 10px;border:1px solid #f1f5f9;color:#1e293b;max-width:200px;overflow:hidden;text-overflow:ellipsis}
 
+
+
 .ag-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;padding:24px}
+
 .ag-card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+
 .ag-name{font-weight:600;font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+
 .ag-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:12px;color:#64748b}
+
 .ag-val{font-weight:600;color:#1e293b}
+
 .ag-bar{height:5px;background:#f1f5f9;border-radius:3px;margin-top:10px;overflow:hidden}
+
 .ag-fill{height:100%;border-radius:3px;transition:width .3s}
 
+
+
 .guide{padding:24px;max-width:780px;margin:0 auto}
+
 .g-sec{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:22px;margin-bottom:16px}
+
 .g-sec h3{font-size:14px;font-weight:600;color:#3b82f6;margin-bottom:12px}
+
 .g-sec p,.g-sec li{font-size:13px;color:#64748b;line-height:1.7}
+
 .g-sec ul{padding-left:18px}
+
 .g-sec li{margin-bottom:4px}
+
 .g-tbl{width:100%;border-collapse:collapse;margin-top:10px}
+
 .g-tbl th{background:#f8fafc;padding:8px 12px;text-align:left;font-size:11px;color:#64748b;border:1px solid #e2e8f0}
+
 .g-tbl td{padding:8px 12px;font-size:12px;border:1px solid #e2e8f0;color:#1e293b}
+
 .req{color:#ef4444;font-weight:600}
+
 .opt{color:#10b981;font-weight:500}
 
+
+
 .toast{position:fixed;bottom:20px;right:20px;background:#1e293b;color:#fff;border-radius:10px;padding:12px 18px;font-size:13px;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+
 .toast.on{transform:translateY(0);opacity:1}
+
 ::-webkit-scrollbar{width:5px;height:5px}
+
 ::-webkit-scrollbar-track{background:#f1f5f9}
+
 ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+
 .tab-pane{display:none}
+
 .tab-pane.on{display:block}
+
 </style>
+
 </head>
+
 <body>
 
 
+
+
+
 <div class="hdr">
+
   <div class="hdr-title">
+
     <h1>Suivi des cas — Erreur de traitement</h1>
+
     <p id="hdrSub">0 cas chargés — <span id="hdrDate"></span></p>
+
   </div>
+
   <div class="hdr-btns">
+
     <span class="btn btn-cnt" id="btnCnt">0 cas</span>
+
     <button class="btn btn-imp" onclick="openImport()">⬆ Importer</button>
+
     <button class="btn btn-new" onclick="openAdd()">+ Nouveau</button>
+
     <button class="btn btn-exp" onclick="doExportCSV()">⬇ Export CSV</button>
+
   </div>
+
 </div>
+
+
+
 
 
 <div class="tabs">
+
   <div class="tab on" onclick="switchTab('all',this)">Tous les cas <span class="tb" id="tb-all">0</span></div>
+
   <div class="tab" onclick="switchTab('remontes',this)">Remontés/Temporisés <span class="tb" id="tb-rem">0</span></div>
+
   <div class="tab" onclick="switchTab('erreurs',this)">Erreurs agents <span class="tb" id="tb-err">0</span></div>
+
   <div class="tab" onclick="switchTab('stats',this)">Stats par agent</div>
+
   <div class="tab" onclick="switchTab('guide',this)">Guide import</div>
+
 </div>
+
+
+
 
 
 <div class="stats">
+
   <div class="stat"><div class="stat-n c-blue" id="s-tot">0</div><div class="stat-l">Total cas</div></div>
+
   <div class="stat"><div class="stat-n c-orange" id="s-rem">0</div><div class="stat-l">Cas remontés</div></div>
+
   <div class="stat"><div class="stat-n c-green" id="s-tmp">0</div><div class="stat-l">Temporisations</div></div>
+
   <div class="stat"><div class="stat-n c-red" id="s-rou">0</div><div class="stat-l">Alertes rouges</div></div>
+
   <div class="stat"><div class="stat-n c-cyan" id="s-res">0</div><div class="stat-l">Résolus</div></div>
+
   <div class="stat"><div class="stat-n c-purple" id="s-enc">0</div><div class="stat-l">En cours</div></div>
+
 </div>
+
+
+
 
 
 <div class="tab-pane on" id="pane-all">
+
   
+
   <div class="filters">
+
     <div class="fr1">
+
       <div class="srch-wrap">
+
         <span class="srch-ico">🔍</span>
+
         <input class="srch" id="srch" type="text" placeholder="Rechercher ACC, nom, agent..." oninput="doFilter()">
+
       </div>
+
       <span class="fl">Agent:</span>
+
       <select class="flt" id="fAgent" onchange="doFilter()"><option value="">Tous</option></select>
+
       <span class="fl">Etat:</span>
+
       <select class="flt" id="fEtat" onchange="doFilter()">
+
         <option value="">Tous</option><option>Actif</option><option>Inactif</option>
+
       </select>
+
     </div>
+
     <div class="fr2">
+
       <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:#64748b;font-weight:500;white-space:nowrap">
+
         <input type="checkbox" id="fNouveaux" onchange="doFilter()" style="cursor:pointer"> Nouveaux comptes (&lt;1 mois)
+
       </label>
+
       <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:#64748b;font-weight:500;white-space:nowrap">
+
         <input type="checkbox" id="fShowVentes" onchange="doFilter()" style="cursor:pointer"> Afficher ventes conclues
+
       </label>
+
       <span class="fl">Type:</span>
+
       <select class="flt" id="fType" onchange="doFilter()">
+
         <option value="">Tous</option><option>Résidentiel</option><option>Commercial</option>
+
       </select>
+
       <span class="fl">Raison:</span>
+
       <select class="flt" id="fRaison" onchange="doFilter()">
+
         <option value="">Toutes</option><option>TECH</option><option>Service Client</option>
+
         <option>Facturation</option><option>Vente</option><option>Annulation</option>
+
       </select>
+
       <span class="fl">Alerte:</span>
+
       <select class="flt" id="fAlerte" onchange="doFilter()">
+
         <option value="">Toutes</option><option value="rouge">Rouge</option>
+
         <option value="orange">Orange</option><option value="vert">Verte</option>
+
       </select>
+
       <span class="fl">Statut:</span>
+
       <select class="flt" id="fStatut" onchange="doFilter()">
+
         <option value="">Tous</option><option>Ouvert</option><option>Résolu</option>
+
       </select>
+
       <span class="fl">Du:</span>
+
       <input type="date" class="flt" id="fDu" onchange="doFilter()">
+
       <span class="fl">au</span>
+
       <input type="date" class="flt" id="fAu" onchange="doFilter()">
+
       <span class="rcnt" id="rcnt">0 resultats</span>
+
       <button class="btn btn-reinit" onclick="resetFilters()">Reinitialiser</button>
+
       <button class="btn btn-expcsv" onclick="doExportCSV()">⬇ Export CSV</button>
+
     </div>
+
   </div>
+
   
+
   <div class="tbl-wrap">
+
     <table>
+
       <thead>
+
         <tr>
+
           <th style="width:36px"><input type="checkbox" id="chkAll" onchange="toggleAll(this)"></th>
+
           <th onclick="sortBy('type')">TYPE ↕</th>
+
           <th onclick="sortBy('dateCreation')">DATE CRÉATION ↕</th>
+
           <th onclick="sortBy('acc')">ACC ↕</th>
+
           <th onclick="sortBy('nom')">CLIENT ↕</th>
+
           <th onclick="sortBy('agent')">AGENT ↕</th>
+
           <th onclick="sortBy('date')">DATE ↕</th>
+
           <th onclick="sortBy('raison')">RAISON ↕</th>
+
           <th onclick="sortBy('alerte')">ALERTE ↕</th>
+
           <th onclick="sortBy('statut')">STATUT ↕</th>
+
           <th>ETAT</th>
+
           <th>COMMENTAIRE</th>
+
           <th>ACTIONS</th>
+
         </tr>
+
       </thead>
+
       <tbody id="tbody"></tbody>
+
     </table>
+
   </div>
+
 </div>
+
+
+
 
 
 <div class="tab-pane" id="pane-stats">
+
   <div class="ag-grid" id="agGrid">
+
     <div class="empty" style="grid-column:1/-1"><div class="empty-ico">📊</div><div class="empty-txt">Importez des données pour voir les stats</div></div>
+
   </div>
+
 </div>
+
+
+
 
 
 <div class="tab-pane" id="pane-guide">
+
   <div class="guide">
+
     <div class="g-sec">
+
       <h3>📂 Format d'import</h3>
+
       <p>Importez des fichiers <strong>CSV</strong> ou <strong>XLSX/XLS</strong>. Un écran de vérification s'affichera pour vous permettre d'associer chaque colonne de votre fichier au bon champ.</p>
+
     </div>
+
     <div class="g-sec">
+
       <h3>📋 Colonnes reconnues</h3>
+
       <table class="g-tbl">
+
         <thead><tr><th>Champ</th><th>Noms reconnus automatiquement</th><th>Requis?</th></tr></thead>
+
         <tbody>
+
           <tr><td>Numéro ACC</td><td>ACC, account, compte, numéro</td><td><span class="req">Requis</span></td></tr>
+
           <tr><td>Nom</td><td>Nom</td><td><span class="opt">Optionnel</span></td></tr>
+
           <tr><td>Prénom</td><td>Prénom, prenom</td><td><span class="opt">Optionnel</span></td></tr>
+
           <tr><td>Téléphone</td><td>Téléphone, tel, phone, mobile</td><td><span class="opt">Optionnel</span></td></tr>
+
           <tr><td>Agent / Créé par</td><td>Agent, créé par, user</td><td><span class="opt">Optionnel</span></td></tr>
+
           <tr><td>Date commentaire</td><td>Date commentaire, date</td><td><span class="req">Requis</span></td></tr>
+
           <tr><td>Commentaire</td><td>Commentaire (exact)</td><td><span class="opt">Optionnel</span></td></tr>
+
           <tr><td>Statut</td><td>Statut, status</td><td><span class="opt">Optionnel</span></td></tr>
+
           <tr><td>État compte</td><td>État, etat</td><td><span class="opt">Optionnel</span></td></tr>
+
         </tbody>
+
       </table>
+
     </div>
+
     <div class="g-sec">
+
       <h3>🚦 Alertes automatiques</h3>
+
       <ul>
+
         <li><strong style="color:#dc2626">🔴 Rouge</strong> — Plus de 7 jours sans résolution</li>
+
         <li><strong style="color:#ea580c">🟠 Orange</strong> — Entre 3 et 7 jours</li>
+
         <li><strong style="color:#059669">🟢 Verte</strong> — Moins de 3 jours</li>
+
       </ul>
+
     </div>
+
     <div class="g-sec">
+
       <h3>🏷️ Détection remontés/temporisés</h3>
+
       <p>Mots-clés détectés dans les commentaires : temporisé, temporisation, cas remonté, invité à patienter, sera rappelé, en attente, prise en charge, rappel proposé.</p>
+
     </div>
+
   </div>
+
 </div>
+
+
+
 
 
 <div class="ov" id="ovImport">
+
   <div class="modal" style="width:740px">
+
     <div class="modal-hdr">
+
       <h2 id="impTitle">⬆️ Importer un fichier</h2>
+
       <button class="modal-x" onclick="closeOv('ovImport')">✕</button>
+
     </div>
+
     <div class="modal-body">
+
       
+
       <div id="impS1">
+
         <div class="imp-drop" id="impDrop"
+
              onclick="document.getElementById('fileIn').click()"
+
              ondragover="event.preventDefault();this.classList.add('drag')"
+
              ondragleave="this.classList.remove('drag')"
+
              ondrop="onDrop(event)">
+
           <div class="imp-ico">📂</div>
+
           <div class="imp-txt"><strong>Glissez votre fichier ici</strong><br>ou cliquez pour choisir — CSV ou XLSX acceptés</div>
+
         </div>
+
         <input type="file" id="fileIn" style="display:none" accept=".csv,.xlsx,.xls" onchange="onFileChange(event)">
+
       </div>
+
       
+
       <div id="impSheetSection" style="margin-top:16px;border-top:1px solid #e2e8f0;padding-top:16px;">
+
         <p style="font-size:13px;color:#64748b;margin-bottom:8px;font-weight:600;">Synchroniser depuis Google Sheets</p>
+
         <div style="display:flex;gap:8px;align-items:center;">
+
           <input type="text" id="sheetScriptUrl" placeholder="Coller ici l'URL de votre Apps Script..." value="https://script.google.com/macros/s/AKfycbwZifjTT5xBEaK53Urv-YIfmD1iwSE75rMVxZ3vfjhejPoJIAyqBHuCZr4ORmml5KPGWA/exec" 
+
                  style="flex:1;padding:8px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;font-family:inherit;">
+
           <button class="btn" onclick="syncFromSheet()" 
+
                   style="background:#16a34a;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;white-space:nowrap;">
+
             Charger
+
           </button>
+
         </div>
+
         <p id="sheetSyncStatus" style="font-size:12px;color:#64748b;margin-top:6px;"></p>
+
       </div>
+
       <div id="impS2" style="display:none">
+
         <div class="map-info" id="mapInfo"></div>
+
         <div class="map-grid" id="mapGrid"></div>
+
         <div class="prev-lbl">Aperçu — 3 premières lignes de votre fichier</div>
+
         <div class="prev-wrap"><table><thead id="prevH"></thead><tbody id="prevB"></tbody></table></div>
+
       </div>
+
     </div>
+
     <div class="modal-ftr" id="impFtr">
+
       <button class="btn btn-outline" onclick="closeOv('ovImport')">Fermer</button>
+
     </div>
+
   </div>
+
 </div>
+
+
+
 
 
 <div class="ov" id="ovCase">
+
   <div class="modal">
+
     <div class="modal-hdr">
+
       <h2 id="caseTitle">➕ Ajouter un cas</h2>
+
       <button class="modal-x" onclick="closeOv('ovCase')">✕</button>
+
     </div>
+
     <div class="modal-body">
+
       <input type="hidden" id="editIdx" value="-1">
+
       <div class="fg-grid">
+
         <div class="fg"><label class="flbl">Type de compte</label>
+
           <select class="fsel" id="f_type"><option>Résidentiel</option><option>Commercial</option></select></div>
+
         <div class="fg"><label class="flbl">Date de création</label><input type="date" class="finp" id="f_dateCreation"></div>
+
         <div class="fg"><label class="flbl">Numéro ACC *</label><input class="finp" id="f_acc" placeholder="ACCxxxxx"></div>
+
         <div class="fg"><label class="flbl">Agent</label><input class="finp" id="f_agent"></div>
+
         <div class="fg"><label class="flbl">Nom</label><input class="finp" id="f_nom"></div>
+
         <div class="fg"><label class="flbl">Prénom</label><input class="finp" id="f_prenom"></div>
+
         <div class="fg"><label class="flbl">Téléphone</label><input class="finp" id="f_tel"></div>
+
         <div class="fg"><label class="flbl">Raison appel</label>
+
           <select class="fsel" id="f_raison"><option>TECH</option><option>Service Client</option><option>Facturation</option><option>Vente</option><option>Annulation</option></select></div>
+
         <div class="fg"><label class="flbl">Date commentaire *</label><input type="date" class="finp" id="f_date"></div>
+
         <div class="fg"><label class="flbl">État compte</label>
+
           <select class="fsel" id="f_etat"><option>Actif</option><option>Inactif</option></select></div>
+
         <div class="fg"><label class="flbl">Statut</label>
+
           <select class="fsel" id="f_statut"><option>Ouvert</option><option>Résolu</option></select></div>
+
         <div class="fg full"><label class="flbl">Commentaire</label>
+
           <textarea class="ftxt" id="f_cmt" rows="3" placeholder="Détail du cas..."></textarea></div>
+
       </div>
+
     </div>
+
     <div class="modal-ftr">
+
       <button class="btn btn-danger" id="btnDel" onclick="deleteCase()" style="display:none;margin-right:auto">🗑 Supprimer</button>
+
       <button class="btn btn-outline" onclick="closeOv('ovCase')">Annuler</button>
+
       <button class="btn btn-save" onclick="saveCase()">✅ Enregistrer</button>
+
     </div>
+
   </div>
+
 </div>
+
+
 
 <div class="toast" id="toast"></div>
 
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
 <script>
 
+
+
 const SHEET_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwZifjTT5xBEaK53Urv-YIfmD1iwSE75rMVxZ3vfjhejPoJIAyqBHuCZr4ORmml5KPGWA/exec';
+
 let DATA = [];
+
 let VIEW = [];
+
 let activeTab = 'all';
+
 let sortCol = 'date';
+
 let sortDir = -1;
+
 let rawRows = [];
 
+
+
 const $ = id => document.getElementById(id);
+
 const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
 const today = () => new Date().toISOString().slice(0,10);
+
 const todayFr = () => new Date().toLocaleDateString('fr-CA',{year:'numeric',month:'long',day:'numeric'});
 
+
+
 function daysBetween(iso){
+
   if(!iso) return null;
+
   const d = new Date(iso);
+
   if(isNaN(d)) return null;
+
   return Math.floor((new Date()-d)/86400000);
+
 }
+
 function alerteOf(j){
+
   if(j===null) return 'vert';
+
   return j>=7?'rouge':j>=3?'orange':'vert';
+
 }
+
 function isRemonte(c){
+
   if(!c) return false;
+
   const t=c.toLowerCase();
+
   return t.includes('temporis')
+
     ||t.includes('cas remonté')
+
     ||t.includes('cas remonte')
+
     ||t.includes('cas remonter')
+
     ||t.includes('cas remontée')
+
     ||t.includes('invité à patienter')
+
     ||t.includes('inviter a patienter')
+
     ||t.includes('invité de patienter')
+
     ||t.includes('inviter de patienter')
+
     ||t.includes('sera rappelé')
+
     ||t.includes('sera recontact')
+
     ||t.includes('sera rap')
+
     ||t.includes('en attente')
+
     ||t.includes('prise en charge')
+
     ||t.includes('rappel proposé')
+
     ||t.includes('rappel propose')
+
     ||t.includes('rappel client ok')
+
     ||t.includes('client ok rappel')
+
     ||t.includes('refus')
+
     ||t.includes('insatis');
+
 }
+
 function isErreur(c){
+
   if(!c) return false;
+
   return /erreur|mauvaise manip|fausse route|annulé par erreur|information incorrecte|erreur saisie/i.test(c);
+
 }
+
 function isVenteConclue(c){
+
   if(!c) return false;
-  return /^1.s*ventes*conclue/i.test(c.trim());
+
+  return /^1\.\s*vente\s*conclue/i.test(c.trim());
+
 }
+
+
 
 function isNouveauMalTraite(dateCreation, commentaire){
+
   if(!dateCreation || !commentaire) return false;
+
   const d = new Date(dateCreation);
+
   if(isNaN(d)) return false;
+
   const diffDays = Math.floor((new Date() - d) / 86400000);
+
   if(diffDays > 31) return false;
+
   return /mauvais traitement|mal trait|manque de prise en charge|non pris en charge|insatisf|plainte|pas de suivi|aucun suivi|abandon|ignor|néglig|pas rappel|jamais rappel|pas de retour|aucun retour|pas contact|refus de|mauvaise prise|pas aidé|problème non résolu/i.test(commentaire);
+
 }
+
+
 
 function isProbleme(c){
+
   if(!c) return false;
+
   return /escalad|rappel non fait|promesse non tenue|délai dépassé|compte bloqu|service interrompu|coupure|facturation incorrecte|double facturation|erreur de facturation|erreur migration|migration échou|résiliation non traité|déménagement non traité|technique non résolu|panne|sans service|pas de service|hors service|pas de signal|pas d'internet|connexion perdue|pas de connexion|pas fonctionnel|toujours pas résolu|jamais résolu|relance|deuxième appel|troisième appel|plusieurs appels|3ème appel|2ème appel|déjà appelé|rappelé plusieurs|aucune solution|solution non trouvée|non résolu|non pris en charge|refus d'escalade|superviseur|gestionnaire|plainte formelle|insatisf|mécontent|en colère|frustré|pas content|très insatisfait|abandonne|veut résilier|veut annuler|menace de partir|retard|pas encore régl|jamais régl|pas traité|non traité|en attente depuis|attente prolongée/i.test(c);
+
 }
+
 function detectRaison(colVal, cmt){
+
   const v=(colVal||'').trim().toLowerCase();
+
   if(v.includes('vente'))          return 'Vente';
+
   if(v.includes('annul'))          return 'Annulation';
+
   if(v.includes('factur'))         return 'Facturation';
+
   if(v.includes('service client')||v.includes('sac')) return 'Service Client';
+
   if(v.includes('tech'))           return 'TECH';
 
+
+
   const c=(cmt||'').toLowerCase();
+
   if(/vente conclue|vente refus|résumé de commande|branchement|configurer|activation modem|service internet.*activ|ok pour.*forfait|vente.*ok|ok.*vente/i.test(c)) return 'Vente';
+
   if(/annulat|résiliation|résili|cancel|client souhaite.*annul|annul.*client|demande d.annul/i.test(c)) return 'Annulation';
+
   if(/factur|paiement|nsf|remboursement|crédit|facturation|frais|montant|solde|prélève|mode de paiement/i.test(c)) return 'Facturation';
+
   if(/sac|service client|qualité et fidélisation|modification.*compte|changement.*forfait|suspension|réactivat|information.*compte|demande d.information|renseignement|portabilité|transfert de ligne|numéro de téléphone/i.test(c)) return 'Service Client';
+
   return 'TECH';
+
 }
+
+
 
 function parseDate(val){
+
   if(val===null||val===undefined||val==='') return '';
+
   if(typeof val==='number' && val>40000 && val<60000){
+
     const d=new Date(Math.round((val-25569)*86400*1000));
+
     return d.toISOString().slice(0,10);
+
   }
+
   const s=String(val).trim();
+
   if(!s) return '';
+
   if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+
   const MO={
+
     january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12,
+
     janvier:1,février:2,mars:3,avril:4,mai:5,juin:6,juillet:7,août:8,septembre:9,octobre:10,novembre:11,décembre:12,
+
     jan:1,feb:2,mar:3,apr:4,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12,
+
     janv:1,févr:2,avr:4,juil:7,sept:9
+
   };
+
   const m1=s.match(/([a-záàâäéèêëîïôöùûüçœ]+)\s+(\d{1,2}),?\s*(\d{4})/i);
+
   if(m1){const mo=MO[m1[1].toLowerCase()];if(mo)return `${m1[3]}-${String(mo).padStart(2,'0')}-${m1[2].padStart(2,'0')}`;}
+
   const m2=s.match(/(\d{1,2})\s+([a-záàâäéèêëîïôöùûüçœ]+)\s+(\d{4})/i);
+
   if(m2){const mo=MO[m2[2].toLowerCase()];if(mo)return `${m2[3]}-${String(mo).padStart(2,'0')}-${m2[1].padStart(2,'0')}`;}
+
   const m3=s.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+
   if(m3)return `${m3[3]}-${m3[2].padStart(2,'0')}-${m3[1].padStart(2,'0')}`;
+
   const d=new Date(s);
+
   if(!isNaN(d))return d.toISOString().slice(0,10);
+
   return '';
+
 }
+
+
 
 function fmtDate(iso){
+
   if(!iso) return '';
+
   const d=new Date(iso+'T00:00:00');
+
   if(isNaN(d)) return iso;
+
   return d.toLocaleDateString('fr-CA',{year:'numeric',month:'long',day:'numeric'});
+
 }
+
+
 
 function showToast(msg,ok=true){
+
   const t=$('toast');
+
   t.innerHTML=(ok?'✅ ':'❌ ')+msg;
+
   t.className='toast on';
+
   setTimeout(()=>t.className='toast',3200);
+
 }
+
+
 
 function switchTab(id,el){
+
   activeTab=id;
+
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+
   el.classList.add('on');
+
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));
+
   if(id==='stats'){$('pane-stats').classList.add('on');renderAgentStats();}
+
   else if(id==='guide'){$('pane-guide').classList.add('on');}
+
   else{$('pane-all').classList.add('on');doFilter();}
+
 }
+
+
 
 function updateStats(){
+
   const rem=DATA.filter(r=>r.remonte).length;
+
   const tmp=DATA.filter(r=>/temporis/i.test(r.commentaire)).length;
+
   const rou=DATA.filter(r=>r.alerte==='rouge').length;
+
   const res=DATA.filter(r=>r.statut==='Résolu').length;
+
   const enc=DATA.filter(r=>r.statut==='Ouvert').length;
+
   $('s-tot').textContent=DATA.length;
+
   $('s-rem').textContent=rem;
+
   $('s-tmp').textContent=tmp;
+
   $('s-rou').textContent=rou;
+
   $('s-res').textContent=res;
+
   $('s-enc').textContent=enc;
+
   $('btnCnt').textContent=DATA.length+' cas';
+
   $('hdrSub').innerHTML=`${DATA.length} cas chargés — <span id="hdrDate">${todayFr()}</span>`;
+
   $('tb-all').textContent=DATA.length;
+
   $('tb-rem').textContent=rem;
+
   $('tb-err').textContent=DATA.filter(r=>r.erreur).length;
+
 }
+
+
 
 function refreshAgentFilter(){
+
   const agents=[...new Set(DATA.map(r=>r.agent).filter(Boolean))].sort();
+
   const sel=$('fAgent'),cur=sel.value;
+
   sel.innerHTML='<option value="">Tous</option>'+agents.map(a=>`<option${a===cur?' selected':''}>${a}</option>`).join('');
+
 }
 
+
+
 function doFilter(){
+
   const s=$('srch').value.toLowerCase();
+
   const ag=$('fAgent').value,et=$('fEtat').value,ra=$('fRaison').value,ty=$('fType')?$('fType').value:'';
+
   const al=$('fAlerte').value,st=$('fStatut').value;
+
   const du=$('fDu').value,au=$('fAu').value;
 
+
+
   const showVentes = $('fShowVentes') && $('fShowVentes').checked;
+
   const onlyNouveaux = $('fNouveaux') && $('fNouveaux').checked;
 
+
+
   let src=DATA;
+
   if(activeTab==='remontes') src=DATA.filter(r=>r.remonte);
+
   else if(activeTab==='erreurs') src=DATA.filter(r=>r.erreur);
+
+
 
   if(!showVentes) src=src.filter(r=>!isVenteConclue(r.commentaire));
 
+
+
   VIEW=src.filter(r=>{
+
     if(onlyNouveaux){
+
       if(!r.dateCreation) return false;
+
       const dC=new Date(r.dateCreation);
+
       if(isNaN(dC)||Math.floor((new Date()-dC)/86400000)>31) return false;
+
     }
+
     if(s&&![r.acc,r.nom,r.prenom,r.tel,r.agent,r.commentaire].join(' ').toLowerCase().includes(s))return false;
+
     if(ag&&r.agent!==ag)return false;
+
     if(ty&&r.type!==ty)return false;
+
     if(et&&r.etat!==et)return false;
+
     if(ra&&r.raison!==ra)return false;
+
     if(al&&r.alerte!==al)return false;
+
     if(st&&r.statut!==st)return false;
+
     if(du&&r.date&&r.date<du)return false;
+
     if(au&&r.date&&r.date>au)return false;
+
     return true;
+
   });
+
   renderTable();
+
   $('rcnt').textContent=VIEW.length+' resultats';
+
 }
+
+
 
 function resetFilters(){
+
   ['srch','fDu','fAu'].forEach(id=>$(id).value='');
+
   ['fAgent','fEtat','fRaison','fAlerte','fStatut','fType'].forEach(id=>{if($(id))$(id).value='';});
+
   if($('fNouveaux'))$('fNouveaux').checked=false;
+
   if($('fShowVentes'))$('fShowVentes').checked=false;
+
   doFilter();
+
 }
+
+
 
 function sortBy(col){
+
   if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=1;}
+
   DATA.sort((a,b)=>{
+
     let va=a[col]??'',vb=b[col]??'';
+
     if(col==='jours'){va=a.jours??9999;vb=b.jours??9999;}
+
     if(typeof va==='number')return(va-vb)*sortDir;
+
     return String(va).localeCompare(String(vb),'fr')*sortDir;
+
   });
+
   doFilter();
+
 }
+
+
 
 function renderTable(){
+
   const tb=$('tbody');
+
   if(!VIEW.length){
+
     const msg=DATA.length?'Aucun cas ne correspond aux filtres.':
+
       'Aucune donnée. <button class="btn btn-imp" style="margin-left:10px" onclick="openImport()">⬆ Importer un fichier</button>';
+
     tb.innerHTML=`<tr><td colspan="11"><div class="empty"><div class="empty-ico">${DATA.length?'🔍':'📂'}</div><div class="empty-txt">${msg}</div></div></td></tr>`;
+
     return;
+
   }
+
   tb.innerHTML=VIEW.map(r=>{
+
     const idx=DATA.indexOf(r);
+
     const alBadge=r.alerte==='rouge'?'<span class="badge b-rouge">★ Rouge</span>':
+
                   r.alerte==='orange'?'<span class="badge b-orange">● Orange</span>':
+
                   '<span class="badge b-vert">● Verte</span>';
+
     const rCls=r.raison.toLowerCase().includes('tech')?'b-tech':
+
                r.raison.toLowerCase().includes('factur')?'b-fact':
+
                r.raison.toLowerCase().includes('vente')?'b-vente':
+
                r.raison.toLowerCase().includes('annul')?'b-annul':'b-sac';
+
     const stCls=r.statut==='Résolu'?'resolu':'ouvert';
+
     const etatBadge=r.etat==='Inactif'?'<span class="b-inactif">Inactif</span>':'<span class="b-actif">Actif</span>';
 
+
+
     const LIMIT=120;
+
     const full=esc(r.commentaire||'');
+
     const short=esc((r.commentaire||'').slice(0,LIMIT));
+
     const hasMore=(r.commentaire||'').length>LIMIT;
+
     const cmtHtml=`<div class="cmt-wrap">
+
       <div class="cmt-txt cmt-short" id="cs${idx}">${short}${hasMore?'<span style="color:#94a3b8">…</span>':''}</div>
+
       <div class="cmt-txt cmt-full" id="cf${idx}">${full}</div>
+
       ${hasMore?`<span class="voir-plus" id="vp${idx}" onclick="toggleCmt(${idx})">▾ voir plus</span>`:''}
+
     </div>`;
+
+
 
     const nouveauMal = isNouveauMalTraite(r.dateCreation, r.commentaire);
+
     const hasProbleme = !nouveauMal && isProbleme(r.commentaire);
+
     const venteConclue = isVenteConclue(r.commentaire);
+
     const typeBadge = r.type==='Commercial'?'<span class="b-comm">🏢 Commercial</span>':'<span class="b-resid">🏠 Résidentiel</span>';
+
     const dateCreFmt = r.dateCreation ? fmtDate(r.dateCreation) : '<span style="color:#cbd5e1">—</span>';
+
     const nouveauMalBadge = nouveauMal ? '<br><span class="b-nouveau-mal">⚠️ Nouveau client mal traité</span>' : '';
+
     const problemeBadge = hasProbleme ? '<br><span class="b-probleme">🔶 Problème détecté</span>' : '';
+
     const rowClass = nouveauMal?'nouveau-mal-traite':hasProbleme?'has-probleme':venteConclue?'vente-conclue':'';
+
     return `<tr class="${rowClass}">
+
       <td><input type="checkbox" ${r.sel?'checked':''} onchange="DATA[${idx}].sel=this.checked"></td>
+
       <td>${typeBadge}</td>
+
       <td class="dt">${dateCreFmt}</td>
+
       <td><span class="acc">${esc(r.acc)}</span>${nouveauMalBadge}${problemeBadge}</td>
+
       <td><div class="cname">${esc(r.nom)} ${esc(r.prenom)}</div><div class="ctel">${esc(r.tel)}</div></td>
+
       <td><span class="agent-lnk">${esc(r.agent)}</span></td>
+
       <td class="dt">${fmtDate(r.date)}</td>
+
       <td><span class="badge ${rCls}">${esc(r.raison)}</span></td>
+
       <td>${alBadge}</td>
+
       <td><select class="stsel ${stCls}" onchange="chgStatut(${idx},this)">
+
         <option${r.statut==='Ouvert'?' selected':''}>Ouvert</option>
+
         <option${r.statut==='Résolu'?' selected':''}>Résolu</option>
+
       </select></td>
+
       <td>${etatBadge}</td>
+
       <td>${cmtHtml}</td>
+
       <td><div class="act-btns">
+
         <button class="btn-ic" onclick="openEdit(${idx})">✏️ Modifier</button>
+
         <button class="btn-ic" onclick="delRow(${idx})">🗑</button>
+
       </div></td>
+
     </tr>`;
+
   }).join('');
+
 }
+
+
 
 function toggleCmt(idx){
+
   const cs=$('cs'+idx),cf=$('cf'+idx),vp=$('vp'+idx);
+
   if(!cs||!cf||!vp) return;
+
   const expanded=cf.style.display==='block';
+
   cs.style.display=expanded?'':'none';
+
   cf.style.display=expanded?'none':'block';
+
   vp.innerHTML=expanded?'▾ voir plus':'▴ voir moins';
+
 }
+
+
 
 function toggleAll(cb){DATA.forEach(r=>r.sel=cb.checked);renderTable();}
+
 function chgStatut(idx,sel){
+
   DATA[idx].statut=sel.value;
+
   sel.className='stsel '+(sel.value==='Résolu'?'resolu':'ouvert');
+
   updateStats();
+
 }
 
+
+
 function renderAgentStats(){
+
   const agents=[...new Set(DATA.map(r=>r.agent).filter(Boolean))];
+
   const g=$('agGrid');
+
   if(!agents.length){g.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-ico">📊</div><div class="empty-txt">Importez des données pour voir les stats</div></div>';return;}
+
   g.innerHTML=agents.map(ag=>{
+
     const rows=DATA.filter(r=>r.agent===ag);
+
     const tot=rows.length,res=rows.filter(r=>r.statut==='Résolu').length;
+
     const rou=rows.filter(r=>r.alerte==='rouge').length,rem=rows.filter(r=>r.remonte).length;
+
     const pct=tot?Math.round(res/tot*100):0;
+
     const fillColor=pct>=70?'#10b981':pct>=40?'#f97316':'#ef4444';
+
     return `<div class="ag-card">
+
       <div class="ag-name">👤 ${esc(ag)}</div>
+
       <div class="ag-row"><span>Total cas</span><span class="ag-val">${tot}</span></div>
+
       <div class="ag-row"><span>Résolus</span><span class="ag-val" style="color:#10b981">${res}</span></div>
+
       <div class="ag-row"><span>Alertes rouges</span><span class="ag-val" style="color:#ef4444">${rou}</span></div>
+
       <div class="ag-row"><span>Remontés/Temp.</span><span class="ag-val" style="color:#f97316">${rem}</span></div>
+
       <div class="ag-row"><span>Taux résolution</span><span class="ag-val">${pct}%</span></div>
+
       <div class="ag-bar"><div class="ag-fill" style="width:${pct}%;background:${fillColor}"></div></div>
+
     </div>`;
+
   }).join('');
+
 }
+
+
+
 
 
 function syncFromSheet(){
+
   const url = document.getElementById('sheetScriptUrl').value.trim();
+
   if(!url){ document.getElementById('sheetSyncStatus').textContent='Veuillez coller l\'URL de l\'Apps Script.'; return; }
+
   const statusEl = document.getElementById('sheetSyncStatus');
+
   statusEl.textContent = 'Chargement en cours...';
+
   statusEl.style.color = '#3b82f6';
+
   fetch(url)
+
     .then(r => {
+
       if(!r.ok) throw new Error('HTTP ' + r.status);
+
       return r.json();
+
     })
+
     .then(sheetRows => {
+
       if(!Array.isArray(sheetRows)) throw new Error('Format invalide');
+
       const MAP = {
+
         'ACC':'acc','Nom':'nom','Prenom':'prenom','Prénom':'prenom',
+
         'Telephone':'tel','Téléphone':'tel','Type':'type',
+
         'Date de creation':'dateCreation','Date de création':'dateCreation',
+
         'Cree par':'agent','Créé par':'agent',
+
         'Date commentaire':'date','Commentaire':'commentaire',
+
         'Etat du compte':'etat','État du compte':'etat',
+
         'Raison':'raison','Statut':'statut','Alerte':'alerte'
+
       };
+
       const fmt = (d) => {
+
         if(!d) return '';
+
         const dt = new Date(d);
+
         if(isNaN(dt.getTime())) return String(d);
+
         return dt.toISOString().split('T')[0];
+
       };
+
       const newCases = sheetRows.map(row => {
+
         const cas = {};
+
         for(const [sk,jk] of Object.entries(MAP)){
+
           if(row[sk]!==undefined) cas[jk]=String(row[sk]||'').trim();
+
         }
+
         if(cas.dateCreation) cas.dateCreation = fmt(cas.dateCreation);
+
         if(cas.date) cas.date = fmt(cas.date);
+
         cas.raison = cas.raison || '';
+
         cas.jours = 0;
+
         cas.remonte = false;
+
         cas.erreur = false;
+
         cas.sel = false;
+
         if(!cas.alerte) cas.alerte = 'vert';
+
         if(!cas.statut) cas.statut = 'Ouvert';
+
         return cas;
+
       }).filter(c => c.acc);
+
       if(newCases.length === 0) throw new Error('Aucun cas avec colonne ACC trouvé');
+
       DATA = newCases;
+
       VIEW = DATA.slice();
+
       saveToLS();
+
       renderTable();
+
       updateStats();
+
       closeOv('ovImport');
+
       showToast(DATA.length + ' cas chargés depuis Google Sheets', true);
+
       document.getElementById('sheetScriptUrl').value = '';
+
       statusEl.textContent = '';
+
     })
+
     .catch(e => {
+
       statusEl.textContent = 'Erreur: ' + e.message;
+
       statusEl.style.color = '#ef4444';
+
     });
+
 }
+
+
+
 
 
 function openImport(){
+
   $('impS1').style.display='';$('impS2').style.display='none';
+
   $('impTitle').textContent='⬆️ Importer un fichier';
+
   $('impFtr').innerHTML='<button class="btn btn-outline" onclick="closeOv(\'ovImport\')">Fermer</button>';
+
   $('ovImport').classList.add('on');
+
 }
+
 function onDrop(e){
+
   e.preventDefault();$('impDrop').classList.remove('drag');
+
   const f=e.dataTransfer.files[0];if(f)processFile(f);
+
 }
+
 function onFileChange(e){
+
   const f=e.target.files[0];if(f)processFile(f);e.target.value='';
+
 }
+
 function processFile(file){
+
   const reader=new FileReader();
+
   reader.onload=e=>{
+
     try{
+
       const wb=XLSX.read(e.target.result,{type:'array',cellDates:false});
+
       const ws=wb.Sheets[wb.SheetNames[0]];
+
       rawRows=XLSX.utils.sheet_to_json(ws,{defval:''});
+
       if(!rawRows.length){showToast('Fichier vide',false);return;}
+
       showMappingStep(file.name);
+
     }catch(err){showToast('Erreur: '+err.message,false);}
+
   };
+
   reader.readAsArrayBuffer(file);
+
 }
+
+
 
 const FIELDS=[
+
   {key:'type',         label:'Type de compte',   req:false, hints:['type de compte','type compte','type','segment','segmentation']},
+
   {key:'dateCreation', label:'Date de création',  req:false, hints:['date de création','date creation','date_creation','date ouverture','date d\'ouverture']},
+
   {key:'acc',      label:'Numéro ACC',       req:true,  hints:['acc']},
+
   {key:'nom',      label:'Nom',              req:false, hints:['nom']},
+
   {key:'prenom',   label:'Prénom',           req:false, hints:['prénom','prenom']},
+
   {key:'tel',      label:'Téléphone',        req:false, hints:['téléphone','telephone','mobile','phone','tél','tel']},
+
   {key:'agent',    label:'Agent / Créé par', req:false, hints:['créé par','cree par','agent','user']},
+
   {key:'date',     label:'Date commentaire', req:true,  hints:['date commentaire','date du commentaire','date_commentaire','date']},
+
   {key:'raison',   label:'Raison appel',     req:false, hints:['raison','motif']},
+
   {key:'commentaire',label:'Commentaire',    req:false, hints:['commentaire']},
+
   {key:'statut',   label:'Statut',           req:false, hints:['statut','status']},
+
   {key:'etat',     label:'État compte',      req:false, hints:['état','etat']},
+
 ];
 
+
+
 function detectCol(headers, hints){
+
   for(const h of hints){
+
     const found=headers.find(hh=>hh.toLowerCase().trim()===h);
+
     if(found) return found;
+
   }
+
   for(const h of hints){
+
     const found=headers.find(hh=>hh.toLowerCase().trim().startsWith(h));
+
     if(found) return found;
+
   }
+
   return '';
+
 }
+
+
 
 function showMappingStep(fileName){
+
   const headers=Object.keys(rawRows[0]);
+
   $('mapInfo').textContent=`📋 ${fileName} — ${rawRows.length} lignes, ${headers.length} colonnes. Vérifiez le mapping ci-dessous.`;
+
   $('impTitle').textContent='🗂️ Associer les colonnes';
 
+
+
   const grid=$('mapGrid');
+
   grid.innerHTML=FIELDS.map(f=>{
+
     const detected=detectCol(headers,f.hints);
+
     const opts=['<option value="">(ignorer)</option>',
+
       ...headers.map(h=>`<option value="${esc(h)}"${h===detected?' selected':''}>${esc(h)}</option>`)
+
     ].join('');
+
     const okTag=detected?`<span class="map-ok">✓ détecté automatiquement</span>`:'';
+
     return `<div>
+
       <div class="map-lbl">${f.label}${f.req?'<span class="map-req">*</span>':''}${okTag}</div>
+
       <select class="map-sel" id="map_${f.key}">${opts}</select>
+
     </div>`;
+
   }).join('');
 
+
+
   $('prevH').innerHTML='<tr>'+headers.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr>';
+
   $('prevB').innerHTML=rawRows.slice(0,3).map(r=>
+
     '<tr>'+headers.map(h=>{
+
       const v=String(r[h]??'');
+
       return `<td title="${esc(v)}">${esc(v.slice(0,50))}${v.length>50?'…':''}</td>`;
+
     }).join('')+'</tr>'
+
   ).join('');
 
+
+
   $('impS1').style.display='none';
+
   $('impS2').style.display='';
+
   $('impFtr').innerHTML=`
+
     <button class="btn btn-outline" onclick="backToS1()">← Retour</button>
+
     <button class="btn btn-save" onclick="confirmImport()">✅ Importer ${rawRows.length} lignes</button>`;
+
 }
+
+
 
 function backToS1(){
+
   $('impS1').style.display='';$('impS2').style.display='none';
+
   $('impTitle').textContent='⬆️ Importer un fichier';
+
   $('impFtr').innerHTML='<button class="btn btn-outline" onclick="closeOv(\'ovImport\')">Fermer</button>';
+
 }
+
+
 
 function confirmImport(){
+
   const map={};
+
   for(const f of FIELDS) map[f.key]=$('map_'+f.key).value;
+
   const missing=FIELDS.filter(f=>f.req&&!map[f.key]).map(f=>f.label);
+
   if(missing.length){showToast('Champs requis: '+missing.join(', '),false);return;}
 
+
+
   const get=(r,col)=>col?String(r[col]??'').trim():'';
+
   const newRows=rawRows.map(r=>{
+
     const iso=parseDate(map.date?r[map.date]:'');
+
     const j=daysBetween(iso);
+
     const cmt=get(r,map.commentaire);
+
     const stRaw=get(r,map.statut).toLowerCase();
+
     const st=stRaw.includes('résol')||stRaw.includes('resol')||stRaw.includes('ferm')?'Résolu':'Ouvert';
+
     const etRaw=get(r,map.etat).toLowerCase();
+
     const et=etRaw.includes('inactif')||etRaw.includes('annul')?'Inactif':'Actif';
+
     const isoCreation = parseDate(map.dateCreation?r[map.dateCreation]:'');
+
     const typeVal = get(r,map.type)||'Résidentiel';
+
     const typeNorm = (typeVal.toLowerCase().includes('comm')||typeVal.toLowerCase().includes('entreprise')||typeVal.toLowerCase().includes('affaire'))?'Commercial':'Résidentiel';
+
     return{
+
       type:typeNorm,dateCreation:isoCreation,
+
       acc:get(r,map.acc),nom:get(r,map.nom),prenom:get(r,map.prenom),
+
       tel:get(r,map.tel),agent:get(r,map.agent),date:iso,
+
       raison:detectRaison(get(r,map.raison),cmt),commentaire:cmt,
+
       statut:st,etat:et,jours:j,
+
       remonte:isRemonte(cmt),erreur:isErreur(cmt),sel:false,
+
       alerte:isRemonte(cmt)&&st==='Ouvert'?'rouge':alerteOf(j)
+
     };
+
   });
+
   DATA=[...DATA,...newRows];
+
   closeOv('ovImport');
+
   refreshAgentFilter();updateStats();
+
   DATA.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+
   doFilter();
+
   showToast(`${newRows.length} cas importés avec succès`);
+
 }
+
+
 
 function openAdd(){
+
   $('editIdx').value=-1;$('caseTitle').textContent='➕ Ajouter un cas';
+
   $('btnDel').style.display='none';
+
   ['f_acc','f_nom','f_prenom','f_tel','f_agent','f_cmt'].forEach(id=>$(id).value='');
+
   $('f_date').value=today();
+
   $('f_raison').value='TECH';$('f_etat').value='Actif';$('f_statut').value='Ouvert';
+
   $('ovCase').classList.add('on');
+
 }
+
 function openEdit(idx){
+
   const r=DATA[idx];
+
   $('editIdx').value=idx;$('caseTitle').textContent='✏️ Modifier le cas';
+
   $('btnDel').style.display='';
+
   $('f_type').value=r.type||'Résidentiel';$('f_dateCreation').value=r.dateCreation||'';
+
   $('f_acc').value=r.acc;$('f_nom').value=r.nom;$('f_prenom').value=r.prenom;
+
   $('f_tel').value=r.tel;$('f_agent').value=r.agent;$('f_date').value=r.date;
+
   $('f_raison').value=r.raison;$('f_cmt').value=r.commentaire;
+
   $('f_etat').value=r.etat;$('f_statut').value=r.statut;
+
   $('ovCase').classList.add('on');
+
 }
+
 function saveCase(){
+
   const acc=$('f_acc').value.trim();
+
   if(!acc){showToast('Le numéro ACC est requis',false);return;}
+
   const idx=parseInt($('editIdx').value);
+
   const iso=$('f_date').value,j=daysBetween(iso),cmt=$('f_cmt').value;
+
   const row={type:$('f_type').value,dateCreation:$('f_dateCreation').value,
+
     acc,nom:$('f_nom').value,prenom:$('f_prenom').value,tel:$('f_tel').value,
+
     agent:$('f_agent').value,date:iso,raison:$('f_raison').value,commentaire:cmt,
+
     etat:$('f_etat').value,statut:$('f_statut').value,
+
     jours:j,remonte:isRemonte(cmt),erreur:isErreur(cmt),sel:false,
+
     alerte:isRemonte(cmt)&&$('f_statut').value==='Ouvert'?'rouge':alerteOf(j)};
+
   if(idx===-1)DATA.unshift(row);else DATA[idx]=row;
+
   closeOv('ovCase');refreshAgentFilter();updateStats();doFilter();
+
   showToast(idx===-1?'Cas ajouté':'Cas mis à jour');
+
 }
+
 function deleteCase(){
+
   const idx=parseInt($('editIdx').value);
+
   if(idx>=0){DATA.splice(idx,1);refreshAgentFilter();updateStats();doFilter();showToast('Cas supprimé');}
+
   closeOv('ovCase');
+
 }
+
 function delRow(idx){
+
   if(confirm('Supprimer ce cas ?')){DATA.splice(idx,1);refreshAgentFilter();updateStats();doFilter();showToast('Cas supprimé');}
+
 }
+
+
 
 function doExportCSV(){
+
   const src=VIEW.filter(r=>r.sel).length?VIEW.filter(r=>r.sel):VIEW;
+
   if(!src.length){showToast('Aucune donnée à exporter',false);return;}
+
   const hdrs=['Type compte','Date création','ACC','Nom','Prénom','Téléphone','Agent','Date','Nb jours','Alerte','Raison','Statut','État','Commentaire','Remonté/Temp','Erreur agent','Nouveau mal traité','Problème détecté'];
+
   const rows=src.map(r=>[r.type||'Résidentiel',r.dateCreation||'',r.acc,r.nom,r.prenom,r.tel,r.agent,r.date,r.jours??'',
+
     r.alerte==='rouge'?'Rouge':r.alerte==='orange'?'Orange':'Verte',
+
     r.raison,r.statut,r.etat,r.commentaire,r.remonte?'Oui':'Non',r.erreur?'Oui':'Non',isNouveauMalTraite(r.dateCreation,r.commentaire)?'Oui':'Non',isProbleme(r.commentaire)?'Oui':'Non']);
+
   const csv=[hdrs,...rows].map(row=>row.map(c=>`"${String(c??'').replace(/"/g,'""')}"`).join(',')).join('\n');
+
   const a=document.createElement('a');
+
   a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
+
   a.download=`Suivi_Cas_${today()}.csv`;a.click();
+
   showToast(`${src.length} cas exportés`);
+
 }
 
+
+
 function closeOv(id){$(id).classList.remove('on');}
+
 document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');}));
+
+
+
 
 
 const DONNEES_INTEGREES = ``;
 
+
+
 (function loadIntegratedData(){
+
   const raw = DONNEES_INTEGREES.trim();
+
   if(!raw) return;
+
+
 
   let rows = [];
 
+
+
   if(raw.startsWith('[') || raw.startsWith('{')){
+
     try{ rows = JSON.parse(raw); }
+
     catch(e){ console.warn('Erreur JSON intégré:',e); return; }
+
   } else {
+
     const lines = raw.split('\n');
+
     const parseCSVLine = (line) => {
+
       const result = [];
+
       let cur = '', inQ = false;
+
       for(let i=0;i<line.length;i++){
+
         const ch = line[i];
+
         if(ch==='"'){ inQ=!inQ; }
+
         else if(ch===','&&!inQ){ result.push(cur.trim()); cur=''; }
+
         else{ cur+=ch; }
+
       }
+
       result.push(cur.trim());
+
       return result;
+
     };
+
     const headers = parseCSVLine(lines[0]);
+
     for(let i=1;i<lines.length;i++){
+
       if(!lines[i].trim()) continue;
+
       const vals = parseCSVLine(lines[i]);
+
       const obj = {};
+
       headers.forEach((h,idx)=>{ obj[h] = vals[idx]||''; });
+
       rows.push(obj);
+
     }
+
   }
+
+
 
   if(!rows.length) return;
 
+
+
   const headers = Object.keys(rows[0]);
+
   const FIELDS_LOCAL=[
+
     {key:'acc',     hints:['acc']},
+
     {key:'nom',     hints:['nom']},
+
     {key:'prenom',  hints:['prénom','prenom']},
+
     {key:'tel',     hints:['téléphone','telephone','mobile','phone','tél','tel']},
+
     {key:'agent',   hints:['créé par','cree par','agent','user']},
+
     {key:'date',    hints:['date commentaire','date du commentaire','date_commentaire','date']},
+
     {key:'raison',  hints:['raison','motif']},
+
     {key:'commentaire', hints:['commentaire']},
+
     {key:'statut',  hints:['statut','status']},
+
     {key:'etat',    hints:['état','etat']},
+
   ];
+
   const map={};
+
   for(const f of FIELDS_LOCAL) map[f.key]=detectCol(headers,f.hints);
 
+
+
   const get=(r,col)=>col?String(r[col]??'').trim():'';
+
   const newRows=rows.map(r=>{
+
     const iso=parseDate(map.date?r[map.date]:'');
+
     const j=daysBetween(iso);
+
     const cmt=get(r,map.commentaire);
+
     const stRaw=get(r,map.statut).toLowerCase();
+
     const st=stRaw.includes('résol')||stRaw.includes('resol')||stRaw.includes('ferm')?'Résolu':'Ouvert';
+
     const etRaw=get(r,map.etat).toLowerCase();
+
     const et=etRaw.includes('inactif')||etRaw.includes('annul')?'Inactif':'Actif';
+
     return{
+
       acc:get(r,map.acc),nom:get(r,map.nom),prenom:get(r,map.prenom),
+
       tel:get(r,map.tel),agent:get(r,map.agent),date:iso,
+
       raison:detectRaison(get(r,map.raison),cmt),commentaire:cmt,
+
       statut:st,etat:et,jours:j,alerte:isRemonte(cmt)&&st==='Ouvert'?'rouge':alerteOf(j),
+
       remonte:isRemonte(cmt),erreur:isErreur(cmt),sel:false
+
     };
+
   });
+
   DATA=[...DATA,...newRows];
+
 })();
+
+
 
 const LS_KEY = 'bravocomment_data';
 
+
+
 function saveToLS() {
+
   try {
+
     localStorage.setItem(LS_KEY, JSON.stringify(DATA));
+
     showSaveIndicator();
+
   } catch(e) {
+
     console.warn('localStorage save failed:', e);
+
   }
+
 }
+
+
 
 function loadFromLS() {
+
   try {
+
     const raw = localStorage.getItem(LS_KEY);
+
     if (!raw) return false;
+
     const parsed = JSON.parse(raw);
+
     if (Array.isArray(parsed) && parsed.length > 0) {
+
       DATA = parsed;
+
       return true;
+
     }
+
   } catch(e) {
+
     console.warn('localStorage load failed:', e);
+
   }
+
   return false;
+
 }
+
+
 
 function clearLS() {
+
   if (confirm('Effacer toutes les données sauvegardées ? Cette action est irréversible.')) {
+
     localStorage.removeItem(LS_KEY);
+
     DATA = [];
+
     VIEW = [];
+
     refreshAgentFilter();
+
     updateStats();
+
     doFilter();
+
     showToast('Données effacées');
+
   }
+
 }
+
+
 
 function showSaveIndicator() {
+
   const el = document.getElementById('saveIndicator');
+
   if (!el) return;
+
   el.textContent = '✓ Sauvegardé';
+
   el.style.opacity = '1';
+
   setTimeout(() => { el.style.opacity = '0'; }, 2000);
+
 }
 
+
+
 const _origSaveCase = saveCase;
+
 saveCase = function() { _origSaveCase(); saveToLS(); };
+
 const _origDeleteCase = deleteCase;
+
 deleteCase = function() { _origDeleteCase(); saveToLS(); };
+
 const _origDelRow = delRow;
+
 delRow = function(idx) { _origDelRow(idx); saveToLS(); };
+
 const _origChgStatut = chgStatut;
+
 chgStatut = function(idx, sel) { _origChgStatut(idx, sel); saveToLS(); };
+
 const _origConfirmImport = confirmImport;
+
 confirmImport = function() { _origConfirmImport(); saveToLS(); };
+
+
 
 $('hdrDate').textContent = todayFr();
 
+
+
 const hdrBtns = document.querySelector('.hdr-btns');
+
 if (hdrBtns) {
+
   const saveSpan = document.createElement('span');
+
   saveSpan.id = 'saveIndicator';
+
   saveSpan.style.cssText = 'color:#10b981;font-size:11px;font-weight:600;opacity:0;transition:opacity .5s;align-self:center;white-space:nowrap;';
+
   saveSpan.textContent = '✓ Sauvegardé';
+
   hdrBtns.appendChild(saveSpan);
 
+
+
   const clearBtn = document.createElement('button');
+
   clearBtn.className = 'btn btn-danger';
+
   clearBtn.style.fontSize = '11px';
+
   clearBtn.innerHTML = '🗑 Effacer';
+
   clearBtn.onclick = clearLS;
+
   hdrBtns.appendChild(clearBtn);
+
 }
 
+
+
 if (loadFromLS()) {
+
   refreshAgentFilter();
+
   updateStats();
+
   DATA.sort((a, b) => String(b.date).localeCompare(String(a.date)));
+
   doFilter();
+
   showToast('✓ ' + DATA.length + ' cas restaurés automatiquement');
+
 }
+
 refreshAgentFilter();updateStats();
+
 DATA.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+
 doFilter();
+
 </script>
+
 </body>
+
 </html>
+
