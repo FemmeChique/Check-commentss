@@ -909,53 +909,43 @@ function alerteOf(j){
 }
 
 function isRemonte(c){
-
   if(!c) return false;
-
   const t=c.toLowerCase();
-
   return t.includes('temporis')
-
     ||t.includes('cas remonté')
-
     ||t.includes('cas remonte')
-
     ||t.includes('cas remonter')
-
     ||t.includes('cas remontée')
-
     ||t.includes('invité à patienter')
-
     ||t.includes('inviter a patienter')
-
     ||t.includes('invité de patienter')
-
     ||t.includes('inviter de patienter')
-
     ||t.includes('sera rappelé')
-
     ||t.includes('sera recontact')
-
     ||t.includes('sera rap')
-
     ||t.includes('en attente')
-
     ||t.includes('prise en charge')
-
     ||t.includes('rappel proposé')
-
     ||t.includes('rappel propose')
-
     ||t.includes('rappel client ok')
-
     ||t.includes('client ok rappel')
-
+    ||t.includes('refuse de collaborer')
+    ||t.includes('client refuse')
     ||t.includes('refus')
-
-    ||t.includes('insatis');
-
+    ||t.includes('insatis')
+    ||t.includes('menace d\'annuler')
+    ||t.includes('veut annuler')
+    ||t.includes('veut faire une plainte')
+    ||t.includes('veut porter plainte')
+    ||t.includes('client va passer en boutique')
+    ||t.includes('client va vérifier')
+    ||t.includes('va nous contacter')
+    ||t.includes('on va revenir vers')
+    ||t.includes('un collègue va')
+    ||t.includes('le bo va')
+    ||t.includes('sera traité')
+    ||t.includes('sera traite');
 }
-
 function isErreur(c){
 
   if(!c) return false;
